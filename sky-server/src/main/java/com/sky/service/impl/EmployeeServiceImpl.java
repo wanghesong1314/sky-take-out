@@ -17,6 +17,9 @@ import com.sky.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import sun.util.resources.LocaleData;
+
+import java.time.LocalDateTime;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -65,6 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
+
     /**
      * 分页查询
      * @param employeePageQueryDTO
@@ -86,8 +90,40 @@ public class EmployeeServiceImpl implements EmployeeService {
         return pageResult;
     }
 
+    /**
+     * 新增员工
+     * @param employee
+     */
+    @Override
     public void save(Employee employee) {
         employeeMapper.insert(employee);
     }
 
+
+    /**
+     * 根据id改变状态
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+//        建造者模式的风格
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .updateTime(LocalDateTime.now())
+                .build();
+        employeeMapper.updateById(employee);
+    }
+
+    @Override
+    public Employee getById(Integer id) {
+        Employee employee = employeeMapper.selectById(id);
+        return employee;
+    }
+
+    @Override
+    public void update(Employee employee) {
+        employeeMapper.updateById(employee);
+    }
 }

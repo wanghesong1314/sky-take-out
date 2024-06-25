@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.baomidou.mybatisplus.extension.api.R;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
@@ -101,9 +102,6 @@ public class EmployeeController {
         //设置记录的创建时间和修改时间
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
-
-
-
         //设置当前记录创建人id和修改人id
         //TODO 后期改为当前登录用户的id
         employee.setCreateUser(BaseContext.getCurrentId());
@@ -121,5 +119,37 @@ public class EmployeeController {
         PageResult pageResult=employeeService.employeePageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
+
+    @PostMapping("/status/{status}")
+    @ApiOperation("员工账号启用或者禁用")
+    public Result startOrStop(@PathVariable("status") Integer status,Long id){
+        log.info("启用禁用员工账号：{},{}",status,id);
+       employeeService.startOrStop(status,id);
+        return Result.success();
+    }
+
+
+    @GetMapping("{id}")
+    @ApiOperation("根据员工id查信息")
+    public Result<Employee> getById(@PathVariable("id") Integer id){
+        log.info("根据ID查询员工信息：{}",id);
+        Employee employee=employeeService.getById(id);
+//        密码加密
+        employee.setPassword("****");
+        return Result.success(employee);
+    }
+    @PutMapping()
+    @ApiOperation("更新员工信息")
+    public Result update(@RequestBody EmployeeDTO employeeDTO){
+        log.info("更新员工信息{}",employeeDTO);
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employeeService.update(employee);
+        return Result.success();
+    }
+
+
 
 }
