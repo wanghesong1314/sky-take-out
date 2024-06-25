@@ -1,24 +1,22 @@
 package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
-import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
-import com.sky.result.Result;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -67,6 +65,26 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult employeePageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+//        创建条件语句
+        LambdaQueryWrapper<Employee> lwq=new LambdaQueryWrapper();
+//        插入条件
+        lwq.like(employeePageQueryDTO.getName()!=null,Employee::getName,employeePageQueryDTO.getName());
+        lwq.orderByDesc(Employee::getCreateTime);
+//        分页
+        IPage<Employee> page=new Page(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+//        启动查询，会被拦截器拦截加入到page中
+        employeeMapper.selectPage(page, lwq);
+//        封装结果
+        PageResult pageResult=new PageResult(page.getTotal(),page.getRecords());
+        return pageResult;
+    }
 
     public void save(Employee employee) {
         employeeMapper.insert(employee);
