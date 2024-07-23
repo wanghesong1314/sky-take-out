@@ -1,8 +1,10 @@
 package com.sky.service;
 
+import com.sky.annotation.AutoFill;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.result.PageResult;
 
 public interface EmployeeService {
@@ -14,6 +16,7 @@ public interface EmployeeService {
      */
     Employee login(EmployeeLoginDTO employeeLoginDTO);
 
+
     void save(Employee employee);
 
     PageResult employeePageQuery(EmployeePageQueryDTO employeePageQueryDTO);
@@ -22,5 +25,6 @@ public interface EmployeeService {
 
     Employee getById(Integer id);
 
-    void update(Employee employee);
+
+     void update(Employee employee);
 }

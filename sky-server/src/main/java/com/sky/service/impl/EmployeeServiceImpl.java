@@ -3,11 +3,13 @@ package com.sky.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
@@ -95,6 +97,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employee
      */
     @Override
+    @AutoFill(value = OperationType.INSERT)
     public void save(Employee employee) {
         employeeMapper.insert(employee);
     }
@@ -106,12 +109,14 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id
      */
     @Override
+    @AutoFill(value = OperationType.UPDATE)
     public void startOrStop(Integer status, Long id) {
 //        建造者模式的风格
         Employee employee = Employee.builder()
                 .id(id)
                 .status(status)
-                .updateTime(LocalDateTime.now())
+//                已经添加了反射机制自动注入公共字段了，不需要了
+//                .updateTime(LocalDateTime.now())
                 .build();
         employeeMapper.updateById(employee);
     }
@@ -123,6 +128,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @AutoFill(value = OperationType.UPDATE)
     public void update(Employee employee) {
         employeeMapper.updateById(employee);
     }
